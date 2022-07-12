@@ -6,6 +6,16 @@ const colorDivs = document.querySelectorAll('.color');
 const generateBtn = document.querySelector('.generate');
 const sliders = document.querySelectorAll('input[type="range"]');
 const currentHexes = document.querySelectorAll('.color h2');
+const popup = document.querySelector('.copy-container');
+const adjustButton = document.querySelectorAll('.adjust');
+const closeAdjustment = document.querySelectorAll('.close-adjustment');
+const sliderContainers = document.querySelectorAll('.sliders');
+
+console.log(currentHexes)
+console.log(popup)
+console.log(adjustButton)
+console.log(closeAdjustment)
+console.log(sliderContainers)
 
 let initialColors;
 
@@ -15,13 +25,39 @@ let initialColors;
 */ 
 
 sliders.forEach((slider) => {
-    slider.addEventListener('input', hslControls);
-})
+    slider.addEventListener("input", hslControls);
+});
+
 colorDivs.forEach((div, index) => {
-    div.addEventListener('change', () => {
+    div.addEventListener("change", () => {
         updateTextUI(index);
     });
 });
+
+currentHexes.forEach((hex) => {
+    hex.addEventListener("click", () => {
+        copyToClipboard(hex)
+    });
+});
+
+popup.addEventListener("transitionend", () => {
+    const popupBox = popup.children[0];
+    popup.classList.remove('active');
+    popupBox.classList.remove('active');
+});
+
+adjustButton.forEach((button, index) => {
+    button.addEventListener('click', () => {
+       openAdjustmentPanel(index); 
+    })
+});
+
+closeAdjustment.forEach((button, index) => {
+    button.addEventListener('click', () => {
+        closeAdjustmentPanel(index);
+    })
+})
+
 
 
 /*
@@ -104,7 +140,7 @@ function hslControls(e) {
         .set('hsl.h', hue.value);
 
     colorDivs[index].style.backgroundColor = color;
-
+    
     // Colorize sliders inputs
     colorizerSliders(color, hue, brightness, saturation);
 }
@@ -144,6 +180,28 @@ function resetInputs(){
             slider.value = Math.floor(satValue * 100) / 100;
         }
     })
+}
+
+function copyToClipboard(hex) {
+    const el = document.createElement('textarea');
+    el.value = hex.innerText;
+    document.body.appendChild(el);
+    el.select()
+    document.execCommand('copy');
+    document.body.removeChild(el);
+
+    // Pop up animation
+    const popupBox = popup.children[0];
+    popup.classList.add('active');
+    popupBox.classList.add('active');
+}
+
+function openAdjustmentPanel(index) {
+    sliderContainers[index].classList.toggle('active');
+}
+
+function closeAdjustmentPanel(index) {
+    sliderContainers[index].classList.remove('active');
 }
 
 randomColors()
